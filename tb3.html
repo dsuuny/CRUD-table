@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editable Table with Submit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 20px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <h2>Editable Table with Submit</h2>
+    <table class="table table-bordered" id="editableTable">
+        <thead>
+            <tr>
+                <th>Column 1</th>
+                <th>Column 2</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="editable" data-type="text" data-pk="1">Double-click to edit</td>
+                <td class="editable" data-type="text" data-pk="2">Double-click to edit</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button id="addRowButton" class="btn btn-primary">Add Row</button>
+    <button id="submitButton" class="btn btn-success">Submit</button>
+
+    <script>
+        $(document).ready(function() {
+            // Make cells editable
+            $('.editable').dblclick(function() {
+                const currentText = $(this).text();
+                const input = $('<input>').val(currentText).css('width', '100%');
+
+                $(this).html(input);
+                input.focus();
+
+                input.on('blur', function() {
+                    const newValue = $(this).val() || 'Double-click to edit';
+                    $(this).parent().text(newValue);
+                });
+
+                input.on('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        $(this).blur();
+                    }
+                });
+            });
+
+            // Add new row
+            $('#addRowButton').on('click', function() {
+                const newRow = `<tr>
+                    <td class="editable" data-type="text" data-pk="1">Double-click to edit</td>
+                    <td class="editable" data-type="text" data-pk="2">Double-click to edit</td>
+                </tr>`;
+
+                $('#editableTable tbody').append(newRow);
+                $(newRow).find('.editable').dblclick(function() {
+                    const currentText = $(this).text();
+                    const input = $('<input>').val(currentText).css('width', '100%');
+                    $(this).html(input);
+                    input.focus();
+
+                    input.on('blur', function() {
+                        const newValue = $(this).val() || 'Double-click to edit';
+                        $(this).parent().text(newValue);
+                    });
+
+                    input.on('keypress', function(event) {
+                        if (event.key === 'Enter') {
+                            $(this).blur();
+                        }
+                    });
+                });
+            });
+
+            // Submit button functionality
+            $('#submitButton').on('click', function() {
+                const tableData = [];
+                $('#editableTable tbody tr').each(function() {
+                    const rowData = {};
+                    $(this).find('td').each(function(index) {
+                        const columnName = `Column ${index + 1}`;
+                        rowData[columnName] = $(this).text();
+                    });
+                    tableData.push(rowData);
+                });
+
+                const jsonData = JSON.stringify(tableData);
+                console.log(jsonData); // You can see the JSON in the console
+
+                // Send the JSON data to the server
+                $.ajax({
+                    type: 'POST',
+                    url: '/your-endpoint', // Replace with your actual endpoint
+                    contentType: 'application/json',
+                    data: jsonData,
+                    success: function(response) {
+                        alert('Data submitted successfully!');
+                    },
+                    error: function(error) {
+                        alert('Error submitting data!');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
