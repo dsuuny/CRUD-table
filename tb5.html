@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>多输入框的 Bootstrap 表单验证</title>
+</head>
+<body>
+
+<div class="container mt-5">
+    <form id="myForm" novalidate>
+        <div class="form-group">
+            <label for="inputField1">输入框 1:</label>
+            <input type="text" class="form-control" id="inputField1" required>
+            <div class="invalid-feedback">
+                输入不能包含空格或特殊字符。
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputField2">输入框 2:</label>
+            <input type="text" class="form-control" id="inputField2" required>
+            <div class="invalid-feedback">
+                输入不能包含空格或特殊字符。
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputField3">输入框 3:</label>
+            <input type="text" class="form-control" id="inputField3" required>
+            <div class="invalid-feedback">
+                输入不能包含空格或特殊字符。
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">提交</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+        const inputs = document.querySelectorAll('.form-control');
+        let formIsValid = true;
+
+        inputs.forEach(input => {
+            const value = input.value;
+            const isValid = /^[^\s!@#$%^&*(),.?":{}|<>]+$/.test(value);
+
+            if (!isValid) {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                formIsValid = false;
+            } else {
+                input.classList.add('is-valid');
+                input.classList.remove('is-invalid');
+            }
+        });
+
+        if (!formIsValid) {
+            event.preventDefault(); // 阻止表单提交
+        }
+    });
+</script>
+
+</body>
+</html>
